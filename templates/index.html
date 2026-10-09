@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CattleAI — Intelligent Livestock System</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#05010a;--bg2:#0d0818;--bg3:#160c26;
+  --purple:#c084fc;--purple2:#a855f7;
+  --border:#221038;--muted:#9ca3af;
+  --green:#22c55e;--red:#ef4444;
+  --amber:#f59e0b;--blue:#3b82f6;
+}
+body{background:var(--bg);color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;}
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+
+/* ── Header ── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(5,0,10,.95);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 40px;
+}
+.logo{color:var(--purple);font-size:20px;font-weight:700;}
+.logo span{color:#fff;}
+.nav-links a{
+  color:var(--muted);margin:0 8px;padding:7px 14px;
+  border-radius:8px;border:1px solid var(--border);
+  font-size:14px;text-decoration:none;transition:.2s;
+}
+.nav-links a:hover{color:#fff;border-color:var(--purple);}
+
+/* ── Buttons ── */
+.btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:.2s;}
+.btn-purple{background:var(--purple);color:#fff;}
+.btn-purple:hover{background:var(--purple2);}
+.btn-dark{background:transparent;border:1px solid #333;color:#fff;}
+.btn-dark:hover{border-color:var(--purple);color:var(--purple);}
+.btn-red{background:#dc2626;color:#fff;}
+.btn-sm{padding:7px 14px;font-size:13px;border-radius:8px;}
+.btn-lg{padding:14px 28px;font-size:16px;border-radius:12px;}
+
+/* ── Landing ── */
+.hero{
+  text-align:center;padding:100px 40px 60px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(192,132,252,.15) 0%,transparent 60%);
+}
+.hero-badge{
+  display:inline-block;padding:6px 14px;border-radius:20px;
+  background:#1b0f2b;border:1px solid var(--border);
+  color:var(--purple);font-size:13px;margin-bottom:24px;
+}
+.hero h1{font-size:52px;line-height:1.1;margin-bottom:18px;letter-spacing:-1px;}
+.hero h1 span{color:var(--purple);}
+.hero p{color:var(--muted);font-size:18px;max-width:600px;margin:0 auto 32px;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+.features{padding:80px 40px;}
+.section-title{text-align:center;margin-bottom:48px;}
+.section-title h2{font-size:36px;margin-bottom:10px;}
+.section-title h2 span{color:var(--purple);}
+.section-title p{color:var(--muted);}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
+.feature-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:16px;padding:24px;transition:.3s;
+}
+.feature-card:hover{border-color:var(--purple);transform:translateY(-6px);box-shadow:0 0 24px rgba(192,132,252,.2);}
+.feature-icon{font-size:28px;margin-bottom:14px;}
+.feature-card h3{font-size:16px;margin-bottom:8px;}
+.feature-card p{color:var(--muted);font-size:14px;line-height:1.6;}
+
+/* ── Login ── */
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;}
+.login-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;padding:40px;width:100%;max-width:400px;text-align:center;
+}
+.login-card h2{font-size:24px;margin-bottom:6px;}
+.login-card p{color:var(--muted);font-size:14px;margin-bottom:28px;}
+.input-group{margin-bottom:14px;text-align:left;}
+.input-group label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+.input{
+  width:100%;padding:12px 14px;border-radius:10px;
+  border:1px solid var(--border);background:#0a0515;
+  color:#fff;font-size:15px;outline:none;transition:.2s;
+}
+.input:focus{border-color:var(--purple);}
+
+/* ── Dashboard ── */
+#dashboard{padding:40px 20px;}
+.dash-header{text-align:center;margin-bottom:40px;padding-top:30px;}
+.dash-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:900px;margin:0 auto;}
+.dash-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:18px;padding:28px;text-align:center;cursor:pointer;transition:.3s;
+}
+.dash-card:hover{border-color:var(--purple);box-shadow:0 0 30px rgba(192,132,252,.3);transform:translateY(-4px);}
+.dash-card .icon{font-size:36px;margin-bottom:14px;}
+.dash-card h2{font-size:18px;margin-bottom:8px;}
+.dash-card p{color:var(--muted);font-size:14px;margin-bottom:18px;}
+
+/* ── Upload ── */
+#upload{padding:40px 20px;}
+.panel{
+  max-width:860px;margin:0 auto;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;padding:32px;
+}
+.panel-title{font-size:24px;margin-bottom:6px;text-align:center;}
+.panel-sub{color:var(--muted);font-size:14px;text-align:center;margin-bottom:28px;}
+.drop-zone{
+  border:2px dashed var(--border);border-radius:16px;
+  height:220px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  color:var(--muted);font-size:15px;position:relative;
+  transition:.3s;cursor:pointer;
+}
+.drop-zone:hover{border-color:var(--purple);color:var(--purple);}
+.drop-zone input[type=file]{position:absolute;width:100%;height:100%;opacity:0;cursor:pointer;}
+.drop-icon{font-size:40px;margin-bottom:10px;}
+#preview-img{max-width:100%;max-height:200px;border-radius:12px;display:none;margin:16px auto 0;}
+.controls-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:20px;}
+.select,.city-input{
+  padding:10px 14px;border-radius:10px;background:#0a0515;
+  color:#fff;border:1px solid var(--border);font-size:14px;flex:1;min-width:150px;
+}
+.action-btns{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.loading{display:none;text-align:center;padding:20px;color:var(--purple);}
+.spinner{
+  display:inline-block;width:28px;height:28px;
+  border:3px solid rgba(192,132,252,.3);border-top-color:var(--purple);
+  border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Results ── */
+#result{padding:40px 20px;}
+.result-grid{
+  max-width:1050px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+}
+@media(max-width:700px){.result-grid{grid-template-columns:1fr;}}
+.result-image-panel{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:18px;padding:20px;text-align:center;
+}
+.result-image-panel h3{font-size:14px;color:var(--muted);margin-bottom:12px;}
+.result-image-panel img{width:100%;border-radius:12px;object-fit:cover;max-height:240px;}
+.heatmap-toggle{display:flex;gap:8px;justify-content:center;margin-top:12px;}
+.toggle-btn{
+  padding:6px 14px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:.2s;
+}
+.toggle-btn.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+.info-panel{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:18px;padding:24px;
+}
+.breed-name{font-size:26px;font-weight:700;margin-bottom:4px;}
+.conf-wrap{background:#1a1a2e;border-radius:8px;height:8px;margin:8px 0 16px;overflow:hidden;}
+.conf-bar{height:100%;border-radius:8px;background:var(--purple);transition:width .8s ease;}
+.stat-rows{display:flex;flex-direction:column;gap:8px;}
+.stat-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);
+}
+.stat-label{font-size:13px;color:var(--muted);}
+.stat-value{font-size:14px;font-weight:600;}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+.badge-green{background:rgba(34,197,94,.15);color:var(--green);}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red);}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber);}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--blue);}
+.advice-box{
+  margin-top:14px;padding:14px;border-radius:12px;
+  background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);
+  font-size:13px;line-height:1.6;color:#ddd;
+}
+.top3-list{margin-top:14px;}
+.top3-list h4{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.top3-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.top3-item:last-child{border-bottom:none;}
+.top3-bar{flex:1;height:5px;background:#1a1a2e;border-radius:3px;overflow:hidden;}
+.top3-bar-fill{height:100%;background:var(--purple);border-radius:3px;}
+.top3-name{font-size:12px;min-width:130px;}
+.top3-pct{font-size:12px;color:var(--muted);min-width:40px;text-align:right;}
+
+.metric-row{
+  max-width:1050px;margin:16px auto 0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;
+}
+.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;}
+.metric-card .m-label{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.metric-card .m-value{font-size:22px;font-weight:700;}
+.metric-card .m-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+
+.dge-box{
+  max-width:1050px;margin:16px auto 0;padding:16px 20px;
+  background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);
+  border-radius:14px;font-size:14px;
+}
+
+.result-actions{
+  max-width:1050px;margin:16px auto 0;
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+}
+
+/* ── Webcam ── */
+#webcam{padding:40px 20px;}
+video{border-radius:16px;width:100%;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🐄 Cattle<span>AI</span></div>
+  <div class="nav-links">
+    <a href="#" onclick="scrollTo('features')">Features</a>
+    <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-purple btn-sm" id="loginBtn" onclick="showPage('login')">Login</button>
+    <button class="btn btn-red btn-sm" id="logoutBtn" style="display:none" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<!-- LANDING -->
+<div class="page active" id="landing">
+  <div class="hero">
+    <div class="hero-badge">⚡ AI-Powered · 4 Models · Real-time</div>
+    <h1><span>Intelligent</span> Livestock<br>Management System</h1>
+    <p>Breed detection, health analysis, disease severity, climate suitability, and milk prediction — all from one cattle image.</p>
+    <div class="hero-btns">
+      <button class="btn btn-purple btn-lg" onclick="showPage('login')">Start Analysis →</button>
+      <button class="btn btn-dark btn-lg" onclick="scrollTo('features')">See Features</button>
+    </div>
+  </div>
+  <div class="features" id="features">
+    <div class="section-title">
+      <h2>Powered by <span>6 AI Modules</span></h2>
+      <p>Each feature fills a real research gap in livestock management</p>
+    </div>
+    <div class="cards-grid">
+      <div class="feature-card"><div class="feature-icon">🐄</div><h3>Breed Detection</h3><p>Identifies Indian cattle and buffalo breeds using MobileNetV2 fine-tuned on your dataset.</p></div>
+      <div class="feature-card"><div class="feature-icon">🏥</div><h3>Health Analysis</h3><p>Classifies cattle as Healthy, Lumpy, or Foot-and-Mouth disease with confidence score.</p></div>
+      <div class="feature-card"><div class="feature-icon">🦠</div><h3>Disease Severity (DGE)</h3><p>Grades disease severity from 2–7 for precise veterinary intervention planning.</p></div>
+      <div class="feature-card"><div class="feature-icon">🌡️</div><h3>Climate Suitability</h3><p>Live weather + breed heat tolerance = tells if breed fits your region.</p></div>
+      <div class="feature-card"><div class="feature-icon">🥛</div><h3>Milk Prediction</h3><p>Estimates daily milk yield based on breed and current temperature stress.</p></div>
+      <div class="feature-card"><div class="feature-icon">🔥</div><h3>Grad-CAM Heatmap</h3><p>Shows which body parts the AI focused on — making predictions explainable and trustworthy.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="login" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;">
+    <div class="login-card">
+      <div style="font-size:40px;margin-bottom:12px;">🐄</div>
+      <h2>Welcome to CattleAI</h2>
+      <p>Enter your username to start analysing</p>
+      <div class="input-group">
+        <label>Username</label>
+        <input class="input" id="loginUser" placeholder="e.g. farmer_raj" type="text"
+               onkeypress="if(event.key==='Enter') doLogin()">
+      </div>
+      <div class="input-group">
+        <label>Password <span style="color:var(--muted);font-size:11px;">(any — demo)</span></label>
+        <input class="input" id="loginPass" placeholder="Enter password" type="password"
+               onkeypress="if(event.key==='Enter') doLogin()">
+      </div>
+      <button class="btn btn-purple" style="width:100%;margin-top:8px;" onclick="doLogin()">Login / Register</button>
+      <br><br>
+      <button class="btn btn-dark btn-sm" onclick="showPage('landing')">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="dashboard" style="display:none;">
+  <div style="max-width:900px;margin:0 auto;padding:20px;">
+    <div class="dash-header">
+      <h1>Welcome, <span id="dashUser" style="color:var(--purple);">Farmer</span> 👋</h1>
+      <p style="color:var(--muted);margin-top:8px;">Choose how to analyse your cattle</p>
+    </div>
+    <div class="dash-cards">
+      <div class="dash-card" onclick="showPage('upload')">
+        <div class="icon">🖼️</div><h2>Image Analysis</h2>
+        <p>Upload a cattle photo for complete AI analysis.</p>
+        <button class="btn btn-purple btn-sm">Upload Image</button>
+      </div>
+      <div class="dash-card" onclick="showPage('webcam')">
+        <div class="icon">📷</div><h2>Live Camera</h2>
+        <p>Use webcam for real-time breed identification.</p>
+        <button class="btn btn-purple btn-sm">Open Camera</button>
+      </div>
+      <div class="dash-card" onclick="loadHistory()">
+        <div class="icon">📊</div><h2>History</h2>
+        <p>View past analysis results.</p>
+        <button class="btn btn-dark btn-sm">View History</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD -->
+<div class="page" id="upload" style="display:none;">
+  <div style="padding:20px;">
+    <div class="panel">
+      <div class="panel-title">🔍 Cattle Analysis</div>
+      <div class="panel-sub">Upload an image — AI runs 6 modules automatically</div>
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+        <div class="drop-icon">📸</div>
+        <div>Click or drag & drop cattle image here</div>
+        <div style="font-size:13px;margin-top:6px;color:var(--muted);">JPG, PNG, JPEG supported</div>
+      </div>
+      <img id="preview-img" alt="Preview">
+      <div class="controls-row">
+        <div style="flex:1;min-width:140px;">
+          <label style="display:block;font-size:13px;color:var(--muted);margin-bottom:6px;">Voice Language</label>
+          <select class="select" id="langSelect">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label style="display:block;font-size:13px;color:var(--muted);margin-bottom:6px;">Your City (weather)</label>
+          <input class="city-input" id="cityInput" placeholder="e.g. Chennai" value="Chennai">
+        </div>
+      </div>
+      <div class="action-btns">
+        <button class="btn btn-purple" onclick="analyseImage()">🧠 Run Full Analysis</button>
+        <button class="btn btn-dark" onclick="showPage('dashboard')">← Back</button>
+      </div>
+      <div class="loading" id="loading">
+        <span class="spinner"></span>
+        <span id="loadingText">Running AI analysis...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="page" id="result" style="display:none;">
+  <div style="padding:20px;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <h1 style="font-size:28px;">Analysis <span style="color:var(--purple);">Results</span></h1>
+    </div>
+
+    <div class="result-grid">
+      <!-- Images -->
+      <div>
+        <div class="result-image-panel">
+          <h3>Original Image</h3>
+          <img id="resultOriginal" src="" alt="Original">
+        </div>
+        <div class="result-image-panel" id="heatmapPanel" style="display:none;margin-top:14px;">
+          <h3>🔥 Grad-CAM — AI Focus Area</h3>
+          <img id="resultHeatmap" src="" alt="Heatmap">
+          <div class="heatmap-toggle">
+            <button class="toggle-btn active" onclick="showOrig()">Original</button>
+            <button class="toggle-btn" onclick="showHeat()">Heatmap</button>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin-top:8px;">Red/yellow = features AI used to identify breed</p>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="info-panel">
+        <div class="breed-name" id="rBreed">—</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">
+          Confidence: <span id="rConf">—</span>%
+        </div>
+        <div class="conf-wrap"><div class="conf-bar" id="rConfBar" style="width:0%"></div></div>
+
+        <div class="stat-rows">
+          <div class="stat-row">
+            <span class="stat-label">🏥 Health Status</span>
+            <span class="stat-value" id="rHealth">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">🦠 Disease Severity</span>
+            <span class="stat-value" id="rDGE">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">⚖️ Body Condition</span>
+            <span class="stat-value" id="rBCS">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">🌡️ Temperature</span>
+            <span class="stat-value" id="rTemp">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">💧 Humidity</span>
+            <span class="stat-value" id="rHum">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">🌍 Climate Fit</span>
+            <span class="stat-value" id="rClimate">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">🥛 Milk / Day</span>
+            <span class="stat-value" id="rMilk">—</span>
+          </div>
+        </div>
+
+        <div class="advice-box" id="rAdvice">—</div>
+
+        <div class="top3-list">
+          <h4>Top 3 Breed Predictions</h4>
+          <div id="rTop3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="metric-row">
+      <div class="metric-card">
+        <div class="m-label">Breed Confidence</div>
+        <div class="m-value" id="mConf" style="color:var(--purple);">—</div>
+        <div class="m-sub">MobileNetV2 prediction</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Milk Base (no stress)</div>
+        <div class="m-value" id="mBase" style="color:var(--blue);">—</div>
+        <div class="m-sub">Litres per day</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Heat Reduction</div>
+        <div class="m-value" id="mRed" style="color:var(--amber);">—</div>
+        <div class="m-sub">Due to temperature</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">BCS Score</div>
+        <div class="m-value" id="mBCS" style="color:var(--green);">—</div>
+        <div class="m-sub">Body condition (1–5)</div>
+      </div>
+    </div>
+
+    <!-- DGE Info Box -->
+    <div class="dge-box" id="dgeBox" style="display:none;">
+      <strong>🦠 DGE Disease Grade:</strong> <span id="dgeDetail">—</span>
+      <br><small style="color:var(--muted);">Grade scale: 2 (mild) → 7 (severe). Used for veterinary intervention planning.</small>
+    </div>
+
+    <!-- Actions -->
+    <div class="result-actions">
+      <button class="btn btn-purple" onclick="speakResult()">🔊 Voice Output</button>
+      <button class="btn btn-dark" onclick="showPage('upload')">← New Analysis</button>
+      <button class="btn btn-dark" onclick="showPage('dashboard')">Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- WEBCAM -->
+<div class="page" id="webcam" style="display:none;">
+  <div style="padding:20px;">
+    <div class="panel">
+      <div class="panel-title">📷 Live Camera Detection</div>
+      <div class="panel-sub">Point camera at cattle — click Capture to analyse</div>
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+      <div class="action-btns" style="margin-top:16px;">
+        <button class="btn btn-purple" onclick="startCamera()">Start Camera</button>
+        <button class="btn btn-purple" onclick="captureAndAnalyse()">📸 Capture & Analyse</button>
+        <button class="btn btn-red" onclick="stopCamera()">Stop</button>
+        <button class="btn btn-dark" onclick="showPage('dashboard')">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────
+let currentUser  = null;
+let selectedFile = null;
+let lastResult   = null;
+let cameraStream = null;
+
+// ── Page Navigation ────────────────────────────────────────
+function showPage(id) {
+  const protected_pages = ['dashboard','upload','webcam','result'];
+  if (protected_pages.includes(id) && !currentUser) {
+    alert('Please login first!');
+    showPage('login');
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const page = document.getElementById(id);
+  if (page) page.style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function scrollTo(id) {
+  showPage('landing');
+  setTimeout(() => {
+    document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+  }, 150);
+}
+
+// ── Auth ───────────────────────────────────────────────────
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  if (!username) { alert('Please enter a username'); return; }
+
+  fetch('http://127.0.0.1:5000/login', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({username})
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      currentUser = username;
+      document.getElementById('dashUser').textContent = username;
+      document.getElementById('loginBtn').style.display  = 'none';
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+      showPage('dashboard');
+    } else {
+      alert(data.message || 'Login failed');
+    }
+  })
+  .catch(() => {
+    // Offline mode
+    currentUser = username;
+    document.getElementById('dashUser').textContent = username;
+    document.getElementById('loginBtn').style.display  = 'none';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+    showPage('dashboard');
+  });
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('loginBtn').style.display  = 'inline-block';
+  document.getElementById('logoutBtn').style.display = 'none';
+  showPage('landing');
+}
+
+// ── Image Preview ──────────────────────────────────────────
+function previewImage(event) {
+  selectedFile = event.target.files[0];
+  if (!selectedFile) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const p = document.getElementById('preview-img');
+    p.src = e.target.result;
+    p.style.display = 'block';
+  };
+  reader.readAsDataURL(selectedFile);
+}
+
+// ── Analysis ───────────────────────────────────────────────
+function analyseImage() {
+  if (!selectedFile) { alert('Please upload a cattle image first'); return; }
+
+  const loading  = document.getElementById('loading');
+  loading.style.display = 'block';
+
+  const msgs = [
+    'Detecting breed with MobileNetV2...',
+    'Running health analysis...',
+    'Checking disease severity (DGE)...',
+    'Fetching live weather data...',
+    'Generating Grad-CAM heatmap...',
+    'Calculating milk prediction...',
+    'Assembling all results...'
+  ];
+  let mi = 0;
+  const msgEl = document.getElementById('loadingText');
+  const iv = setInterval(() => {
+    msgEl.textContent = msgs[mi % msgs.length]; mi++;
+  }, 1200);
+
+  const city     = document.getElementById('cityInput').value || 'Chennai';
+  const formData = new FormData();
+  formData.append('image',    selectedFile);
+  formData.append('username', currentUser || 'guest');
+  formData.append('city',     city);
+
+  fetch('http://127.0.0.1:5000/predict', {method:'POST', body:formData})
+    .then(r => r.json())
+    .then(data => {
+      clearInterval(iv);
+      loading.style.display = 'none';
+      if (data.success) { lastResult = data; displayResults(data); }
+      else alert('Prediction failed: ' + (data.message || 'Unknown error'));
+    })
+    .catch(err => {
+      clearInterval(iv);
+      loading.style.display = 'none';
+      alert('Server error — make sure Flask is running on port 5000');
+      console.error(err);
+    });
+}
+
+// ── Display Results ────────────────────────────────────────
+function displayResults(d) {
+  showPage('result');
+
+  // Original image
+  const reader = new FileReader();
+  reader.onload = e => { document.getElementById('resultOriginal').src = e.target.result; };
+  reader.readAsDataURL(selectedFile);
+
+  // Heatmap
+  if (d.heatmap_path) {
+    document.getElementById('resultHeatmap').src = 'http://127.0.0.1:5000/' + d.heatmap_path;
+    document.getElementById('heatmapPanel').style.display = 'block';
+  }
+
+  // Breed
+  document.getElementById('rBreed').textContent    = d.breed || 'Unknown';
+  document.getElementById('rConf').textContent     = d.confidence || 0;
+  document.getElementById('rConfBar').style.width  = (d.confidence||0) + '%';
+  document.getElementById('mConf').textContent     = (d.confidence||0) + '%';
+
+  // Health
+  const health = d.health || 'Unknown';
+  const hClass = health.includes('Healthy') ? 'badge-green' : 'badge-red';
+  document.getElementById('rHealth').innerHTML =
+    `<span class="badge ${hClass}">${health} (${d.health_confidence||0}%)</span>`;
+
+  // DGE
+  if (d.dge_grade) {
+    document.getElementById('rDGE').innerHTML =
+      `<span class="badge badge-amber">Grade ${d.dge_grade} (${d.dge_confidence}%)</span>`;
+    document.getElementById('dgeBox').style.display = 'block';
+    document.getElementById('dgeDetail').textContent =
+      `Grade ${d.dge_grade} — ${d.dge_confidence}% confidence`;
+  } else {
+    document.getElementById('rDGE').textContent = 'N/A';
+  }
+
+  // BCS
+  const bcs = d.bcs_score || 3.0;
+  const bcsClass = bcs>=3.5?'badge-green':bcs>=2.5?'badge-amber':'badge-red';
+  document.getElementById('rBCS').innerHTML =
+    `<span class="badge ${bcsClass}">${bcs} / 5</span>`;
+  document.getElementById('mBCS').textContent = bcs + ' / 5';
+
+  // Weather
+  document.getElementById('rTemp').textContent = d.temperature!=null ? `${d.temperature}°C` : 'N/A';
+  document.getElementById('rHum').textContent  = d.humidity!=null    ? `${d.humidity}%`      : 'N/A';
+
+  // Climate
+  const clim      = d.climate_suitability || 'Unknown';
+  const climClass = clim==='Excellent'?'badge-green':clim==='Moderate'?'badge-amber':'badge-red';
+  document.getElementById('rClimate').innerHTML =
+    `<span class="badge ${climClass}">${clim}</span>`;
+
+  // Milk
+  document.getElementById('rMilk').textContent = d.milk_prediction!=null ? `${d.milk_prediction} L/day` : 'N/A';
+  document.getElementById('mBase').textContent  = d.milk_base!=null       ? `${d.milk_base} L/day`      : 'N/A';
+  document.getElementById('mRed').textContent   = d.milk_reduction_pct!=null ? `${d.milk_reduction_pct}%` : '0%';
+
+  // Advice
+  document.getElementById('rAdvice').textContent = d.climate_advice || '';
+
+  // Top 3
+  const t3 = document.getElementById('rTop3');
+  t3.innerHTML = '';
+  (d.top3||[]).forEach(item => {
+    t3.innerHTML += `
+      <div class="top3-item">
+        <span class="top3-name">${item.breed}</span>
+        <div class="top3-bar"><div class="top3-bar-fill" style="width:${item.confidence}%"></div></div>
+        <span class="top3-pct">${item.confidence}%</span>
+      </div>`;
+  });
+}
+
+// ── Heatmap Toggle ─────────────────────────────────────────
+function showOrig() {
+  document.getElementById('resultOriginal').style.display = 'block';
+  document.getElementById('resultHeatmap').style.display  = 'none';
+  document.querySelectorAll('.toggle-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+}
+function showHeat() {
+  document.getElementById('resultOriginal').style.display = 'none';
+  document.getElementById('resultHeatmap').style.display  = 'block';
+  document.querySelectorAll('.toggle-btn').forEach((b,i)=>b.classList.toggle('active',i===1));
+}
+
+// ── Voice Output ───────────────────────────────────────────
+function speakResult() {
+  if (!lastResult) { alert('No result to speak'); return; }
+  const lang = document.getElementById('langSelect').value;
+  const d    = lastResult;
+  const texts = {
+    en: `Breed identified as ${d.breed} with ${d.confidence} percent confidence. Health status is ${d.health}. Estimated milk production is ${d.milk_prediction} litres per day. Climate suitability is ${d.climate_suitability}.`,
+    hi: `पहचानी गई नस्ल ${d.breed} है। विश्वास ${d.confidence} प्रतिशत। स्वास्थ्य ${d.health}। दूध ${d.milk_prediction} लीटर प्रतिदिन।`,
+    ta: `${d.breed} இனமாக கண்டறியப்பட்டது. நம்பிக்கை ${d.confidence} சதவீதம். உடல்நலம் ${d.health}. பால் ${d.milk_prediction} லிட்டர்.`,
+    te: `జాతి ${d.breed}. నమ్మకం ${d.confidence} శాతం. ఆరోగ్యం ${d.health}. పాలు ${d.milk_prediction} లీటర్లు.`,
+    kn: `ತಳಿ ${d.breed}. ವಿಶ್ವಾಸ ${d.confidence} ಶೇಕಡಾ. ಆರೋಗ್ಯ ${d.health}. ಹಾಲು ${d.milk_prediction} ಲೀಟರ್.`,
+  };
+  const langTags = {en:'en-IN',hi:'hi-IN',ta:'ta-IN',te:'te-IN',kn:'kn-IN'};
+  const utter   = new SpeechSynthesisUtterance(texts[lang]||texts.en);
+  utter.lang    = langTags[lang]||'en-IN';
+  const voices  = speechSynthesis.getVoices();
+  const match   = voices.find(v=>v.lang===utter.lang);
+  if (match) utter.voice = match;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+
+// ── Camera ─────────────────────────────────────────────────
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({video:true})
+    .then(s => { cameraStream=s; document.getElementById('video').srcObject=s; })
+    .catch(() => alert('Camera access denied'));
+}
+function stopCamera() {
+  if (cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+}
+function captureAndAnalyse() {
+  const video  = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  canvas.toBlob(blob => {
+    selectedFile = new File([blob],'capture.jpg',{type:'image/jpeg'});
+    showPage('upload');
+    const p = document.getElementById('preview-img');
+    p.src = canvas.toDataURL();
+    p.style.display = 'block';
+  },'image/jpeg');
+}
+
+// ── History ────────────────────────────────────────────────
+function loadHistory() {
+  if (!currentUser) return;
+  fetch(`http://127.0.0.1:5000/history/${currentUser}`)
+    .then(r=>r.json())
+    .then(records => {
+      if (!records.length) { alert('No history yet.'); return; }
+      let msg = `Last ${records.length} analyses:\n\n`;
+      records.slice(0,5).forEach((r,i) => {
+        msg += `${i+1}. ${r.breed} (${r.confidence}%) — ${r.health} — ${r.milk_prediction}L\n`;
+      });
+      alert(msg);
+    })
+    .catch(()=>alert('Could not load history'));
+}
+</script>
+</body>
+</html>
